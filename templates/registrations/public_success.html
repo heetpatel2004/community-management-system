@@ -1,0 +1,28 @@
+{% extends "base_public.html" %}
+{% block page_title %}Registration Submitted{% endblock %}
+
+{% block content %}
+<div class="confirmation-box">
+    <i class="bi bi-check-circle" style="font-size: 48px; color: var(--color-success);"></i>
+    <h3 class="mt-2">Registration Submitted Successfully!</h3>
+    <p class="text-muted">Your annual academic record has been submitted for verification.</p>
+</div>
+
+<div class="public-card">
+    <table class="table table-borderless">
+        <tr><td class="text-muted" style="width: 160px;">Student ID</td><td><span class="id-display">{{ student.student_id }}</span></td></tr>
+        <tr><td class="text-muted">Student Name</td><td><strong>{{ student.full_name }}</strong></td></tr>
+        <tr><td class="text-muted">Family ID</td><td><span class="id-display">{{ family.family_id }}</span></td></tr>
+        <tr><td class="text-muted">Event</td><td>{{ registration.event.display_name }}</td></tr>
+        <tr><td class="text-muted">Standard</td><td>{{ registration.standard }}</td></tr>
+        <tr><td class="text-muted">Medium</td><td>{{ registration.get_medium_display }}</td></tr>
+        <tr><td class="text-muted">Percentage/CGPA</td><td>{{ registration.percentage_or_cgpa }}</td></tr>
+        <tr><td class="text-muted">Status</td><td><span class="badge-status badge-submitted">Submitted</span></td></tr>
+    </table>
+
+    <div class="d-flex gap-2 mt-4 justify-content-center no-print">
+        <button class="btn btn-outline-primary" data-action="print"><i class="bi bi-printer me-1"></i> Print</button>
+        <a href="{% url 'families:lookup' %}" class="btn btn-primary"><i class="bi bi-arrow-left me-1"></i> Back to Family Portal</a>
+    </div>
+</div>
+{% endblock %}

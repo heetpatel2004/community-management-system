@@ -1,0 +1,231 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-speedometer2 me-2"></i>Dashboard</h1>
+        {% if current_event %}
+        <small class="text-muted">Current Event: {{ current_event.display_name }}</small>
+        {% else %}
+        <small class="text-muted">No event currently open for registration</small>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Summary Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card primary">
+            <div class="stat-value">{{ total_families }}</div>
+            <div class="stat-label">Families</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card info">
+            <div class="stat-value">{{ total_students }}</div>
+            <div class="stat-label">Students</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card accent">
+            <div class="stat-value">{{ current_registrations }}</div>
+            <div class="stat-label">Registrations</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card warning">
+            <div class="stat-value">{{ pending_count }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card success">
+            <div class="stat-value">{{ approved_count }}</div>
+            <div class="stat-label">Approved</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="stat-card danger">
+            <div class="stat-value">{{ total_awards }}</div>
+            <div class="stat-label">Awards</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Verification Status -->
+    {% if current_event %}
+    <div class="col-md-6">
+        <div class="content-card">
+            <div class="card-header">
+                <h5><i class="bi bi-pie-chart me-2"></i>Verification Status</h5>
+                <span class="badge bg-secondary">{{ current_event.academic_year }}</span>
+            </div>
+            <div class="card-body">
+                {% if current_registrations > 0 %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="fw-semibold">Submitted (Pending)</small>
+                        <small class="text-muted">{{ pending_count }}</small>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-primary" style="width: {% widthratio pending_count current_registrations 100 %}%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="fw-semibold">Under Review</small>
+                        <small class="text-muted">{{ under_review_count }}</small>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: {% widthratio under_review_count current_registrations 100 %}%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="fw-semibold">Approved</small>
+                        <small class="text-muted">{{ approved_count }}</small>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: {% widthratio approved_count current_registrations 100 %}%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="fw-semibold">Rejected</small>
+                        <small class="text-muted">{{ rejected_count }}</small>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-danger" style="width: {% widthratio rejected_count current_registrations 100 %}%"></div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-inbox d-block"></i>
+                    <p>No registrations yet for this event.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Distribution by Standard -->
+    {% if standard_stats %}
+    <div class="col-md-6">
+        <div class="content-card">
+            <div class="card-header">
+                <h5><i class="bi bi-bar-chart me-2"></i>By Standard</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Standard</th>
+                                <th class="text-end">Count</th>
+                                <th style="width: 50%;">Distribution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in standard_stats %}
+                            <tr>
+                                <td class="fw-semibold">{{ stat.standard }}</td>
+                                <td class="text-end">{{ stat.count }}</td>
+                                <td>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar" style="width: {% widthratio stat.count current_registrations 100 %}%; background: var(--color-primary);"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Distribution by Medium -->
+    {% if medium_stats %}
+    <div class="col-md-6">
+        <div class="content-card">
+            <div class="card-header">
+                <h5><i class="bi bi-translate me-2"></i>By Medium</h5>
+            </div>
+            <div class="card-body">
+                {% for stat in medium_stats %}
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fw-semibold text-capitalize">{{ stat.medium }}</span>
+                    <span class="badge bg-primary rounded-pill">{{ stat.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Registrations -->
+    <div class="col-12">
+        <div class="content-card">
+            <div class="card-header">
+                <h5><i class="bi bi-clock-history me-2"></i>Recent Registrations</h5>
+                <a href="{% url 'registrations:admin_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_registrations %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Family</th>
+                                <th>Event</th>
+                                <th>Standard</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reg in recent_registrations %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'registrations:admin_detail' pk=reg.pk %}">
+                                        {{ reg.student.student_id }}
+                                    </a>
+                                </td>
+                                <td>{{ reg.student.full_name }}</td>
+                                <td>
+                                    <a href="{% url 'families:admin_detail' pk=reg.student.family.pk %}">
+                                        {{ reg.student.family.family_id }}
+                                    </a>
+                                </td>
+                                <td>{{ reg.event.academic_year }}</td>
+                                <td>{{ reg.standard }}</td>
+                                <td>
+                                    <span class="badge-status badge-{{ reg.status }}">
+                                        {{ reg.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ reg.submitted_at|timesince }} ago</small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-inbox d-block"></i>
+                    <h5>No registrations yet</h5>
+                    <p>Registrations will appear here once students begin submitting.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base_public.html" %}
+{% block page_title %}New Family Registration{% endblock %}
+
+{% block content %}
+<div class="public-header">
+    <h1>New Family Registration</h1>
+    <p>Register your family and students to receive permanent Family and Student IDs.</p>
+</div>
+
+<div class="public-card">
+    <form method="POST">
+        {% csrf_token %}
+
+        <h5 class="mb-3"><i class="bi bi-people me-1"></i> Family Information</h5>
+
+        {% for field in form %}
+        {% if field.name != 'num_students' %}
+        <div class="mb-3">
+            <label class="form-label" for="{{ field.id_for_label }}">
+                {{ field.label }} <span class="text-danger">*</span>
+            </label>
+            {{ field }}
+            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+            {% for error in field.errors %}<div class="text-danger" style="font-size: 12px;">{{ error }}</div>{% endfor %}
+        </div>
+        {% endif %}
+        {% endfor %}
+
+        <hr class="my-4">
+
+        <h5 class="mb-3"><i class="bi bi-person-badge me-1"></i> Student Information</h5>
+
+        <div class="mb-3">
+            <label class="form-label">Number of Students</label>
+            {{ form.num_students }}
+        </div>
+
+        <div id="studentFields">
+            <div class="mb-3 student-input">
+                <div class="input-group">
+                    <span class="input-group-text">Student 1</span>
+                    <input type="text" name="student_name" class="form-control"
+                           placeholder="Full Name" required>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="addStudentField" class="btn btn-outline-secondary btn-sm mb-4">
+            <i class="bi bi-plus-lg me-1"></i> Add Another Student
+        </button>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-lg me-1"></i> Register Family
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="text-center mt-3">
+    <a href="{% url 'families:lookup' %}" class="text-muted" style="font-size: 13px;">
+        Already registered? <strong>Look up your Family ID</strong>
+    </a>
+</div>
+{% endblock %}

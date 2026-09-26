@@ -1,0 +1,26 @@
+{% extends "base_admin.html" %}
+{% block content %}
+<div class="page-header">
+    <h1>Edit Registration: {{ registration.student.student_id }} — {{ registration.event.academic_year }}</h1>
+    <a href="{% url 'registrations:admin_detail' registration.pk %}" class="btn btn-outline-secondary btn-sm">Back</a>
+</div>
+<div class="content-card">
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                {% for error in field.errors %}<div class="text-danger" style="font-size: 12px;">{{ error }}</div>{% endfor %}
+            </div>
+            {% endfor %}
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Update Registration</button>
+                <a href="{% url 'registrations:admin_detail' registration.pk %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

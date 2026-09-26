@@ -1,0 +1,69 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-trophy me-2"></i>Award Categories</h1>
+    </div>
+    {% if request.user.is_super_admin %}
+    <a href="{% url 'awards:admin_category_create' %}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>New Category
+    </a>
+    {% endif %}
+</div>
+
+<div class="content-card">
+    <div class="card-body p-0">
+        {% if categories %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Awards Given</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cat in categories %}
+                    <tr>
+                        <td><strong>{{ cat.name }}</strong></td>
+                        <td>
+                            {% if cat.description %}
+                            <small>{{ cat.description|truncatewords:15 }}</small>
+                            {% else %}
+                            <small class="text-muted">—</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if cat.is_active %}
+                            <span class="badge-status badge-approved">Active</span>
+                            {% else %}
+                            <span class="badge-status badge-draft">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ cat.awards.count }}</td>
+                        <td>
+                            {% if request.user.is_super_admin %}
+                            <a href="{% url 'awards:admin_category_edit' pk=cat.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-trophy d-block"></i>
+            <h5>No award categories</h5>
+            <p>Create award categories to start assigning awards to students.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

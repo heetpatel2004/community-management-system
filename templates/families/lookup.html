@@ -1,0 +1,38 @@
+{% extends "base_public.html" %}
+{% block page_title %}Family Lookup{% endblock %}
+
+{% block content %}
+<div class="public-header">
+    <h1>Family Lookup</h1>
+    <p>Enter your Family ID to access your family profile and submit annual registrations.</p>
+</div>
+
+<div class="public-card">
+    <form method="POST">
+        {% csrf_token %}
+
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <div class="mb-3">
+            <label class="form-label" for="id_family_id">Family ID <span class="text-danger">*</span></label>
+            {{ form.family_id }}
+            {% if form.family_id.help_text %}<div class="form-text">{{ form.family_id.help_text }}</div>{% endif %}
+            {% for error in form.family_id.errors %}<div class="text-danger" style="font-size: 12px;">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-search me-1"></i> Find My Family
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="text-center mt-3">
+    <a href="{% url 'families:register' %}" class="text-muted" style="font-size: 13px;">
+        New family? <strong>Register here</strong>
+    </a>
+</div>
+{% endblock %}

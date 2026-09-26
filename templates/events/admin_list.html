@@ -1,0 +1,47 @@
+{% extends "base_admin.html" %}
+{% block content %}
+<div class="page-header">
+    <h1>Events</h1>
+    {% if request.user.is_super_admin %}
+    <a href="{% url 'events:admin_create' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i> Create Event</a>
+    {% endif %}
+</div>
+
+<div class="content-card">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr><th>Academic Year</th><th>Event Date</th><th>Registration Period</th><th>Status</th><th>Registrations</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td><strong>{{ event.academic_year }}</strong></td>
+                    <td>{{ event.event_date|date:"d M Y"|default:"—" }}</td>
+                    <td>
+                        {% if event.registration_start_date %}{{ event.registration_start_date|date:"d M" }} — {{ event.registration_end_date|date:"d M Y" }}
+                        {% else %}—{% endif %}
+                    </td>
+                    <td><span class="badge-status badge-{{ event.status }}">{{ event.get_status_display }}</span></td>
+                    <td>{{ event.registrations.count }}</td>
+                    <td class="d-flex gap-1">
+                        {% if request.user.is_super_admin %}
+                        <a href="{% url 'events:admin_edit' event.pk %}" class="btn btn-outline-primary btn-sm">Edit</a>
+                        {% if event.status == 'draft' %}
+                        <a href="{% url 'events:admin_change_status' event.pk 'open' %}" class="btn btn-outline-success btn-sm" data-confirm="Open this event for registration?">Open</a>
+                        {% elif event.status == 'open' %}
+                        <a href="{% url 'events:admin_change_status' event.pk 'closed' %}" class="btn btn-outline-danger btn-sm" data-confirm="Close registrations for this event?">Close</a>
+                        {% elif event.status == 'closed' %}
+                        <a href="{% url 'events:admin_change_status' event.pk 'open' %}" class="btn btn-outline-warning btn-sm" data-confirm="Re-open this event?">Re-open</a>
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6"><div class="empty-state"><i class="bi bi-calendar-event"></i><h5>No events created yet.</h5></div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Families</h1>
+    <span class="text-muted">{{ total_count }} total</span>
+</div>
+
+<div class="filter-bar">
+    <form method="GET" class="d-flex gap-2">
+        <input type="text" name="search" class="form-control" placeholder="Search by ID, name, mobile, village..." value="{{ search }}">
+        <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
+            <i class="bi bi-search me-1"></i> Search
+        </button>
+        {% if search %}
+        <a href="{% url 'families:admin_list' %}" class="btn btn-outline-secondary">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="content-card">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Family ID</th>
+                    <th>Family Name</th>
+                    <th>Responsible Person</th>
+                    <th>Mobile</th>
+                    <th>Village/City</th>
+                    <th>Students</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for family in families %}
+                <tr>
+                    <td><strong>{{ family.family_id }}</strong></td>
+                    <td>{{ family.family_name }}</td>
+                    <td>{{ family.responsible_person_name }}</td>
+                    <td>{{ family.mobile_number }}</td>
+                    <td>{{ family.village_city }}</td>
+                    <td>{{ family.student_count_val }}</td>
+                    <td>
+                        {% if family.is_active %}
+                        <span class="badge-status badge-approved">Active</span>
+                        {% else %}
+                        <span class="badge-status badge-rejected">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'families:admin_detail' family.pk %}" class="btn btn-outline-primary btn-sm">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">
+                        <div class="empty-state">
+                            <i class="bi bi-people"></i>
+                            <h5>No families found.</h5>
+                            <p>{% if search %}Try a different search term.{% else %}No families have been registered yet.{% endif %}</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% with families as page_obj %}
+{% include "components/pagination.html" %}
+{% endwith %}
+{% endblock %}

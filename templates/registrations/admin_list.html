@@ -1,0 +1,58 @@
+{% extends "base_admin.html" %}
+{% block content %}
+<div class="page-header">
+    <h1>Annual Registrations</h1>
+    <span class="text-muted">{{ total_count }} records</span>
+</div>
+
+<div class="filter-bar">
+    <form method="GET">
+        <div class="row g-2">
+            <div class="col-md-2">{{ filter_form.academic_year }}</div>
+            <div class="col-md-2">{{ filter_form.standard }}</div>
+            <div class="col-md-2">{{ filter_form.medium }}</div>
+            <div class="col-md-2">{{ filter_form.status }}</div>
+            <div class="col-md-2">{{ filter_form.search }}</div>
+            <div class="col-md-2 d-flex gap-1">
+                <button type="submit" class="btn btn-primary btn-sm flex-fill"><i class="bi bi-funnel me-1"></i> Filter</button>
+                <a href="{% url 'registrations:admin_list' %}" class="btn btn-outline-secondary btn-sm">Clear</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="content-card">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr><th>Student ID</th><th>Name</th><th>Family ID</th><th>Year</th><th>Std</th><th>Medium</th><th>%/CGPA</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for reg in registrations %}
+                <tr>
+                    <td><strong>{{ reg.student.student_id }}</strong></td>
+                    <td>{{ reg.student.full_name }}</td>
+                    <td>{{ reg.student.family.family_id }}</td>
+                    <td>{{ reg.event.academic_year }}</td>
+                    <td>{{ reg.standard }}</td>
+                    <td>{{ reg.get_medium_display }}</td>
+                    <td>{{ reg.percentage_or_cgpa }}</td>
+                    <td><span class="badge-status badge-{{ reg.status }}">{{ reg.get_status_display }}</span></td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'registrations:admin_detail' reg.pk %}" class="btn btn-outline-primary btn-sm">View</a>
+                            {% if reg.status == 'submitted' and request.user.is_verification_admin %}
+                            <a href="{% url 'registrations:admin_verify' reg.pk 'approve' %}" class="btn btn-outline-success btn-sm" data-confirm="Approve this registration?">✓</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="9"><div class="empty-state"><i class="bi bi-journal-text"></i><h5>No registrations found.</h5><p>Try adjusting your filters.</p></div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% with registrations as page_obj %}{% include "components/pagination.html" %}{% endwith %}
+{% endblock %}

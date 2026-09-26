@@ -1,0 +1,95 @@
+{% extends "base_admin.html" %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Registration: {{ registration.student.student_id }} — {{ registration.event.academic_year }}</h1>
+        <span class="text-muted" style="font-size: 13px;">{{ registration.student.full_name }}</span>
+    </div>
+    <div class="d-flex gap-2">
+        {% if request.user.is_verification_admin %}
+        <a href="{% url 'registrations:admin_edit' registration.pk %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil me-1"></i> Edit</a>
+        {% endif %}
+        <a href="{% url 'registrations:admin_list' %}" class="btn btn-outline-secondary btn-sm">Back</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-card mb-4">
+            <div class="card-header"><h5>Academic Details</h5></div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6 mb-3"><small class="text-muted d-block">Student ID</small><span class="id-display">{{ registration.student.student_id }}</span></div>
+                    <div class="col-sm-6 mb-3"><small class="text-muted d-block">Student Name</small><strong>{{ registration.student.full_name }}</strong></div>
+                    <div class="col-sm-6 mb-3"><small class="text-muted d-block">Family ID</small><a href="{% url 'families:admin_detail' registration.student.family.pk %}">{{ registration.student.family.family_id }}</a></div>
+                    <div class="col-sm-6 mb-3"><small class="text-muted d-block">Event</small>{{ registration.event.academic_year }}</div>
+                    <div class="col-sm-6 mb-3"><small class="text-muted d-block">Standard</small>{{ registration.standard }}</div>
+                    <div class="col-sm-6 mb-3"><small class="text-muted d-block">Medium</small>{{ registration.get_medium_display }}</div>
+                    <div class="col-sm-6 mb-3"><small class="text-muted d-block">Percentage/CGPA</small><strong>{{ registration.percentage_or_cgpa }}</strong></div>
+                    <div class="col-sm-6 mb-3"><small class="text-muted d-block">Status</small><span class="badge-status badge-{{ registration.status }}">{{ registration.get_status_display }}</span></div>
+                </div>
+                {% if registration.special_achievement %}
+                <div class="mb-3"><small class="text-muted d-block">Special Achievement</small>{{ registration.special_achievement }}</div>
+                {% endif %}
+                {% if registration.admin_remarks %}
+                <div class="mb-3"><small class="text-muted d-block">Admin Remarks</small>{{ registration.admin_remarks }}</div>
+                {% endif %}
+                {% if registration.result_document %}
+                <div class="mb-3">
+                    <small class="text-muted d-block">Result Document</small>
+                    <a href="{{ registration.result_document.url }}" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-file-earmark me-1"></i> View Document</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Verification -->
+        {% if request.user.is_verification_admin and registration.status == 'submitted' %}
+        <div class="content-card mb-4">
+            <div class="card-header"><h5>Verification</h5></div>
+            <div class="card-body">
+                <a href="{% url 'registrations:admin_verify' registration.pk 'approve' %}" class="btn btn-success w-100 mb-2" data-confirm="Approve this registration?"><i class="bi bi-check-lg me-1"></i> Approve</a>
+                <form method="POST" action="{% url 'registrations:admin_verify' registration.pk 'reject' %}">
+                    {% csrf_token %}
+                    <textarea name="admin_remarks" class="form-control mb-2" rows="2" placeholder="Rejection reason..."></textarea>
+                    <button type="submit" class="btn btn-outline-danger w-100" data-confirm="Reject this registration?"><i class="bi bi-x-lg me-1"></i> Reject</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Awards -->
+        <div class="content-card mb-4">
+            <div class="card-header">
+                <h5>Awards</h5>
+                {% if request.user.is_super_admin %}
+                <a href="{% url 'awards:admin_create' registration.pk %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-plus-lg"></i></a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% for award in registration.awards.all %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span><span class="badge bg-warning text-dark">{{ award.category.name }}</span></span>
+                    {% if request.user.is_super_admin %}
+                    <a href="{% url 'awards:admin_delete' award.pk %}" class="text-danger" style="font-size: 12px;" data-confirm="Remove this award?"><i class="bi bi-trash"></i></a>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <small class="text-muted">No awards assigned.</small>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Timestamps -->
+        <div class="content-card">
+            <div class="card-header"><h5>Timeline</h5></div>
+            <div class="card-body" style="font-size: 12.5px;">
+                <p class="mb-1"><small class="text-muted">Submitted:</small> {{ registration.submitted_at|date:"d M Y H:i" }}</p>
+                {% if registration.verified_at %}<p class="mb-1"><small class="text-muted">Verified:</small> {{ registration.verified_at|date:"d M Y H:i" }} by {{ registration.verified_by }}</p>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

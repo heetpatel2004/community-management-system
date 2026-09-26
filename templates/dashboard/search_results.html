@@ -1,0 +1,116 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-search me-2"></i>Search Results</h1>
+        {% if query %}
+        <small class="text-muted">Results for "{{ query }}"</small>
+        {% endif %}
+    </div>
+</div>
+
+{% if not query %}
+<div class="content-card">
+    <div class="card-body">
+        <div class="empty-state">
+            <i class="bi bi-search d-block"></i>
+            <h5>Enter a search term</h5>
+            <p>Search by Family ID, Student ID, name, mobile number, or village.</p>
+        </div>
+    </div>
+</div>
+{% else %}
+
+<!-- Families -->
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-people me-2"></i>Families</h5>
+        <span class="badge bg-secondary">{{ families|length }} found</span>
+    </div>
+    <div class="card-body p-0">
+        {% if families %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Family ID</th>
+                        <th>Family Name</th>
+                        <th>Responsible Person</th>
+                        <th>Mobile</th>
+                        <th>Village / City</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for family in families %}
+                    <tr>
+                        <td><strong>{{ family.family_id }}</strong></td>
+                        <td>{{ family.family_name }}</td>
+                        <td>{{ family.responsible_person_name }}</td>
+                        <td>{{ family.mobile_number }}</td>
+                        <td>{{ family.village_city }}</td>
+                        <td>
+                            <a href="{% url 'families:admin_detail' pk=family.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-4">
+            <p class="mb-0">No families found matching "{{ query }}"</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Students -->
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-person-badge me-2"></i>Students</h5>
+        <span class="badge bg-secondary">{{ students|length }} found</span>
+    </div>
+    <div class="card-body p-0">
+        {% if students %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Student Name</th>
+                        <th>Family ID</th>
+                        <th>Family Name</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td><strong>{{ student.student_id }}</strong></td>
+                        <td>{{ student.full_name }}</td>
+                        <td>{{ student.family.family_id }}</td>
+                        <td>{{ student.family.family_name }}</td>
+                        <td>
+                            <a href="{% url 'students:admin_detail' pk=student.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-4">
+            <p class="mb-0">No students found matching "{{ query }}"</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>{{ family.family_id }} — {{ family.family_name }}</h1>
+        <span class="text-muted" style="font-size: 13px;">Family Profile</span>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'families:admin_edit' family.pk %}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil me-1"></i> Edit
+        </a>
+        <a href="{% url 'families:admin_list' %}" class="btn btn-outline-secondary btn-sm">Back</a>
+    </div>
+</div>
+
+<!-- Family Info -->
+<div class="content-card mb-4">
+    <div class="card-header"><h5>Family Information</h5></div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-6 col-md-4 mb-3">
+                <small class="text-muted d-block">Family ID</small>
+                <span class="id-display">{{ family.family_id }}</span>
+            </div>
+            <div class="col-sm-6 col-md-4 mb-3">
+                <small class="text-muted d-block">Family Name</small>
+                <strong>{{ family.family_name }}</strong>
+            </div>
+            <div class="col-sm-6 col-md-4 mb-3">
+                <small class="text-muted d-block">Responsible Person</small>
+                {{ family.responsible_person_name }}
+            </div>
+            <div class="col-sm-6 col-md-4 mb-3">
+                <small class="text-muted d-block">Mobile</small>
+                {{ family.mobile_number }}
+            </div>
+            <div class="col-sm-6 col-md-4 mb-3">
+                <small class="text-muted d-block">Village / City</small>
+                {{ family.village_city }}
+            </div>
+            <div class="col-sm-6 col-md-4 mb-3">
+                <small class="text-muted d-block">Status</small>
+                {% if family.is_active %}
+                <span class="badge-status badge-approved">Active</span>
+                {% else %}
+                <span class="badge-status badge-rejected">Inactive</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Students -->
+<div class="content-card">
+    <div class="card-header">
+        <h5>Students ({{ students.count }})</h5>
+    </div>
+    <div class="card-body">
+        {% for student in students %}
+        <div class="border rounded p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h6 class="mb-1">
+                        <span class="id-display" style="font-size: 12px;">{{ student.student_id }}</span>
+                        {{ student.full_name }}
+                        {% if not student.is_active %}<span class="badge-status badge-rejected">Inactive</span>{% endif %}
+                    </h6>
+                </div>
+                <a href="{% url 'students:admin_detail' student.pk %}" class="btn btn-outline-primary btn-sm">
+                    View Profile
+                </a>
+            </div>
+
+            {% if student.annual_registrations.all %}
+            <table class="table table-sm mt-2 mb-0" style="font-size: 12.5px;">
+                <thead>
+                    <tr><th>Year</th><th>Standard</th><th>Medium</th><th>%/CGPA</th><th>Status</th><th>Awards</th></tr>
+                </thead>
+                <tbody>
+                    {% for reg in student.annual_registrations.all %}
+                    <tr>
+                        <td>{{ reg.event.academic_year }}</td>
+                        <td>{{ reg.standard }}</td>
+                        <td>{{ reg.get_medium_display }}</td>
+                        <td>{{ reg.percentage_or_cgpa }}</td>
+                        <td><span class="badge-status badge-{{ reg.status }}">{{ reg.get_status_display }}</span></td>
+                        <td>
+                            {% for award in reg.awards.all %}
+                            <span class="badge bg-warning text-dark" style="font-size: 10px;">{{ award.category.name }}</span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <small class="text-muted">No annual registrations yet.</small>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <p>No students found in this family.</p>
+        </div>
+        {% endfor %}
+
+        <hr>
+        <h6>Add New Student</h6>
+        <form method="POST" action="{% url 'families:admin_add_student' family.pk %}" class="d-flex gap-2">
+            {% csrf_token %}
+            <input type="text" name="full_name" class="form-control" placeholder="Student Full Name" required>
+            <button type="submit" class="btn btn-outline-primary" style="white-space: nowrap;">
+                <i class="bi bi-plus-lg me-1"></i> Add Student
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

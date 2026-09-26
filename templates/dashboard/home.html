@@ -1,0 +1,38 @@
+{% extends "base_public.html" %}
+{% block page_title %}Home{% endblock %}
+
+{% block content %}
+<div class="public-header">
+    <h1>Shree Akhil Bharatiya Kutch Kadva Patidar Sanatan Samaj</h1>
+    <h2 style="font-size: 16px; color: var(--color-primary-light); font-weight: 500;">
+        Kheralu Ayojit Saraswati Sanman Samaroh
+    </h2>
+</div>
+
+<div class="row g-4 justify-content-center mb-4">
+    <div class="col-md-6">
+        <div class="public-card text-center">
+            <i class="bi bi-person-plus" style="font-size: 40px; color: var(--color-primary); margin-bottom: 12px;"></i>
+            <h5>New Family Registration</h5>
+            <p class="text-muted" style="font-size: 13px;">
+                First time? Register your family and students to receive permanent IDs.
+            </p>
+            <a href="{% url 'families:register' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> Register Now
+            </a>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="public-card text-center">
+            <i class="bi bi-search" style="font-size: 40px; color: var(--color-primary); margin-bottom: 12px;"></i>
+            <h5>Existing Family</h5>
+            <p class="text-muted" style="font-size: 13px;">
+                Already registered? Enter your Family ID to submit yearly records.
+            </p>
+            <a href="{% url 'families:lookup' %}" class="btn btn-outline-primary">
+                <i class="bi bi-search me-1"></i> Family Lookup
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

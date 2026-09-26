@@ -1,0 +1,60 @@
+{% extends "base_public.html" %}
+{% block page_title %}Registration Successful{% endblock %}
+
+{% block content %}
+<div class="confirmation-box">
+    <i class="bi bi-check-circle" style="font-size: 48px; color: var(--color-success);"></i>
+    <h3 class="mt-2">Family Registered Successfully!</h3>
+    <p class="text-muted">Please save your Family ID and Student IDs for future use.</p>
+</div>
+
+<div class="public-card">
+    <h5 class="mb-3">Family Information</h5>
+    <table class="table table-borderless mb-4">
+        <tr>
+            <td class="text-muted" style="width: 180px;">Family ID</td>
+            <td><span class="id-display">{{ family.family_id }}</span></td>
+        </tr>
+        <tr>
+            <td class="text-muted">Family Name</td>
+            <td><strong>{{ family.family_name }}</strong></td>
+        </tr>
+        <tr>
+            <td class="text-muted">Responsible Person</td>
+            <td>{{ family.responsible_person_name }}</td>
+        </tr>
+        <tr>
+            <td class="text-muted">Mobile</td>
+            <td>{{ family.mobile_number }}</td>
+        </tr>
+        <tr>
+            <td class="text-muted">Village/City</td>
+            <td>{{ family.village_city }}</td>
+        </tr>
+    </table>
+
+    <h5 class="mb-3">Students</h5>
+    <table class="table">
+        <thead>
+            <tr><th>Student ID</th><th>Student Name</th></tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td><span class="id-display">{{ student.student_id }}</span></td>
+                <td>{{ student.full_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="d-flex gap-2 mt-4 justify-content-center no-print">
+        <button class="btn btn-outline-primary" data-action="print">
+            <i class="bi bi-printer me-1"></i> Print
+        </button>
+        <a href="{% url 'families:lookup' %}" class="btn btn-primary">
+            <i class="bi bi-arrow-right me-1"></i> Submit Annual Registration
+        </a>
+    </div>
+</div>
+{% endblock %}

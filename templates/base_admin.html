@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+<div class="admin-wrapper">
+    <!-- Sidebar Overlay (Mobile) -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-brand">
+            <h5><i class="bi bi-mortarboard-fill"></i> Saraswati Sanman Samaroh</h5>
+            <small>Admin Panel</small>
+        </div>
+        <ul class="sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'admin_home' %}active{% endif %}"
+                   href="{% url 'dashboard:admin_home' %}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'families' in request.resolver_match.app_name %}active{% endif %}"
+                   href="{% url 'families:admin_list' %}">
+                    <i class="bi bi-people"></i> Families
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'students' in request.resolver_match.app_name %}active{% endif %}"
+                   href="{% url 'students:admin_list' %}">
+                    <i class="bi bi-person-badge"></i> Students
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'events' in request.resolver_match.app_name %}active{% endif %}"
+                   href="{% url 'events:admin_list' %}">
+                    <i class="bi bi-calendar-event"></i> Events
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'registrations' in request.resolver_match.app_name %}active{% endif %}"
+                   href="{% url 'registrations:admin_list' %}">
+                    <i class="bi bi-journal-text"></i> Annual Registrations
+                </a>
+            </li>
+            <div class="sidebar-divider"></div>
+            <li class="nav-item">
+                <a class="nav-link {% if 'awards' in request.resolver_match.app_name %}active{% endif %}"
+                   href="{% url 'awards:admin_list' %}">
+                    <i class="bi bi-trophy"></i> Awards
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'reports' in request.resolver_match.app_name %}active{% endif %}"
+                   href="{% url 'reports:report' %}">
+                    <i class="bi bi-bar-chart-line"></i> Reports
+                </a>
+            </li>
+            <div class="sidebar-divider"></div>
+            {% if request.user.is_super_admin %}
+            <li class="nav-item">
+                <a class="nav-link {% if 'accounts' in request.resolver_match.app_name %}active{% endif %}"
+                   href="{% url 'accounts:user_list' %}">
+                    <i class="bi bi-gear"></i> Settings & Users
+                </a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'dashboard:home' %}">
+                    <i class="bi bi-globe"></i> Public Site
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'accounts:logout' %}">
+                    <i class="bi bi-box-arrow-left"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button id="sidebarToggle" class="sidebar-toggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="search-box d-none d-md-block">
+                    <form action="{% url 'dashboard:search' %}" method="GET">
+                        <div class="position-relative">
+                            <i class="bi bi-search position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-secondary);"></i>
+                            <input type="text" name="q" class="form-control"
+                                   placeholder="Search families, students..."
+                                   value="{{ request.GET.q|default:'' }}">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <small class="text-muted d-none d-md-inline">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </small>
+                <span class="badge bg-secondary" style="font-size: 10px;">{{ request.user.get_role_display }}</span>
+            </div>
+        </div>
+
+        {% include "components/messages.html" %}
+
+        <!-- Content Area -->
+        <div class="content-area">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+</div>
+{% endblock %}

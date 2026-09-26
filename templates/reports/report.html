@@ -1,0 +1,153 @@
+{% extends "base_admin.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-bar-chart-line me-2"></i>Reports</h1>
+        <small class="text-muted">{{ total_count }} record{{ total_count|pluralize }}</small>
+    </div>
+    {% if total_count > 0 %}
+    <div class="d-flex gap-2 no-print">
+        <a href="?{{ request.GET.urlencode }}&export=csv" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-filetype-csv me-1"></i>CSV
+        </a>
+        <a href="?{{ request.GET.urlencode }}&export=excel" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-file-earmark-excel me-1"></i>Excel
+        </a>
+        <a href="?{{ request.GET.urlencode }}&export=pdf" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+        </a>
+        <button class="btn btn-sm btn-outline-secondary" data-action="print">
+            <i class="bi bi-printer me-1"></i>Print
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Filters -->
+<div class="filter-bar no-print">
+    <form method="GET">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label">Academic Year</label>
+                {{ filter_form.academic_year }}
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Standard</label>
+                {{ filter_form.standard }}
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Medium</label>
+                {{ filter_form.medium }}
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Status</label>
+                {{ filter_form.status }}
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Village / City</label>
+                {{ filter_form.village_city }}
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Search</label>
+                {{ filter_form.search }}
+            </div>
+        </div>
+        <div class="mt-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-sm">
+                <i class="bi bi-funnel me-1"></i>Apply Filters
+            </button>
+            <a href="{% url 'reports:report' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-x-circle me-1"></i>Clear
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Active Filters -->
+{% if active_filters %}
+<div class="mb-3 no-print">
+    <small class="text-muted">Active filters:</small>
+    {% for key, value in active_filters.items %}
+    <span class="badge bg-primary me-1">{{ key }}: {{ value }}</span>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Results Table -->
+<div class="content-card">
+    <div class="card-body p-0">
+        {% if registrations %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Sr.</th>
+                        <th>Student ID</th>
+                        <th>Student Name</th>
+                        <th>Family ID</th>
+                        <th>Family Name</th>
+                        <th>Village</th>
+                        <th>Standard</th>
+                        <th>Medium</th>
+                        <th>% / CGPA</th>
+                        <th>Achievement</th>
+                        <th>Awards</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reg in registrations %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <a href="{% url 'registrations:admin_detail' pk=reg.pk %}">
+                                {{ reg.student.student_id }}
+                            </a>
+                        </td>
+                        <td>{{ reg.student.full_name }}</td>
+                        <td>{{ reg.student.family.family_id }}</td>
+                        <td>{{ reg.student.family.family_name }}</td>
+                        <td>{{ reg.student.family.village_city }}</td>
+                        <td>{{ reg.standard }}</td>
+                        <td>{{ reg.get_medium_display }}</td>
+                        <td>{{ reg.percentage_or_cgpa }}</td>
+                        <td>
+                            {% if reg.special_achievement %}
+                            <small>{{ reg.special_achievement|truncatewords:8 }}</small>
+                            {% else %}
+                            <small class="text-muted">—</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% for award in reg.awards.all %}
+                            <span class="badge bg-warning text-dark" style="font-size: 10px;">{{ award.category.name }}</span>
+                            {% empty %}
+                            <small class="text-muted">—</small>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <span class="badge-status badge-{{ reg.status }}">
+                                {{ reg.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% include "components/pagination.html" with page_obj=registrations %}
+
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-funnel d-block"></i>
+            <h5>No records found</h5>
+            <p>Try adjusting your filters or clearing the search.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

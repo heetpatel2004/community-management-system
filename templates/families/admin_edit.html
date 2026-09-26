@@ -1,0 +1,27 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Edit Family: {{ family.family_id }}</h1>
+    <a href="{% url 'families:admin_detail' family.pk %}" class="btn btn-outline-secondary btn-sm">Back</a>
+</div>
+
+<div class="content-card">
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}<div class="text-danger" style="font-size: 12px;">{{ error }}</div>{% endfor %}
+            </div>
+            {% endfor %}
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Update Family</button>
+                <a href="{% url 'families:admin_detail' family.pk %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
