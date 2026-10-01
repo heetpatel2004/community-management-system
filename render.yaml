@@ -3,7 +3,7 @@ services:
     name: community-management-system
     env: python
     buildCommand: python -m pip install --upgrade pip && python -m pip install --no-cache-dir -r requirements.txt && python -m pip install --no-cache-dir django-environ==0.9.0 && echo "--- pip show django-environ ---" && python -m pip show django-environ || (echo "django-environ not shown; listing all packages:" && python -m pip list) && echo "--- end package list ---" && python manage.py collectstatic --noinput
-    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    startCommand: python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings.production
