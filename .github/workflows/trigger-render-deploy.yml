@@ -1,0 +1,31 @@
+name: Trigger Render deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  trigger-render-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy via API
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          if [ -z "$RENDER_API_KEY" ] || [ -z "$RENDER_SERVICE_ID" ]; then
+            echo "Missing required repository secrets: RENDER_API_KEY and/or RENDER_SERVICE_ID"
+            exit 1
+          fi
+          echo "Triggering Render deploy for service $RENDER_SERVICE_ID (clear cache)"
+          response=$(curl -s -X POST "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"clearCache": true}')
+          echo "Response: $response"
+          if echo "$response" | grep -q '"id"'; then
+            echo "Render deploy triggered successfully"
+          else
+            echo "Failed to trigger Render deploy"
+            exit 1
+          fi
