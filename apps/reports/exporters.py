@@ -3,7 +3,6 @@ Export utilities for CSV, Excel (XLSX), and PDF generation.
 """
 
 import csv
-import io
 from datetime import datetime
 
 from django.http import HttpResponse

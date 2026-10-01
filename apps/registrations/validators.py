@@ -61,8 +61,8 @@ def validate_document_mime_type(value):
 
     if mime_type not in allowed_mimes:
         raise ValidationError(
-            f'File type is not allowed. '
-            f'Please upload a PDF, JPG, or PNG file.'
+            'File type is not allowed. '
+            'Please upload a PDF, JPG, or PNG file.'
         )
 
 

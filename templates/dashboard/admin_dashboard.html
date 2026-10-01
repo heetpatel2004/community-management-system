@@ -69,7 +69,8 @@
                         <small class="text-muted">{{ pending_count }}</small>
                     </div>
                     <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-primary" style="width: {% widthratio pending_count current_registrations 100 %}%"></div>
+                        <div class="progress-bar bg-primary"
+                            style="width: {% widthratio pending_count current_registrations 100 %}%"></div>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -78,7 +79,8 @@
                         <small class="text-muted">{{ under_review_count }}</small>
                     </div>
                     <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-warning" style="width: {% widthratio under_review_count current_registrations 100 %}%"></div>
+                        <div class="progress-bar bg-warning"
+                            style="width: {% widthratio under_review_count current_registrations 100 %}%"></div>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -87,7 +89,8 @@
                         <small class="text-muted">{{ approved_count }}</small>
                     </div>
                     <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-success" style="width: {% widthratio approved_count current_registrations 100 %}%"></div>
+                        <div class="progress-bar bg-success"
+                            style="width: {% widthratio approved_count current_registrations 100 %}%"></div>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -96,7 +99,8 @@
                         <small class="text-muted">{{ rejected_count }}</small>
                     </div>
                     <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-danger" style="width: {% widthratio rejected_count current_registrations 100 %}%"></div>
+                        <div class="progress-bar bg-danger"
+                            style="width: {% widthratio rejected_count current_registrations 100 %}%"></div>
                     </div>
                 </div>
                 {% else %}
@@ -134,7 +138,9 @@
                                 <td class="text-end">{{ stat.count }}</td>
                                 <td>
                                     <div class="progress" style="height: 6px;">
-                                        <div class="progress-bar" style="width: {% widthratio stat.count current_registrations 100 %}%; background: var(--color-primary);"></div>
+                                        <div class="progress-bar"
+                                            style="width: {% widthratio stat.count current_registrations 100 %}%; background: var(--color-primary);">
+                                        </div>
                                     </div>
                                 </td>
                             </tr>

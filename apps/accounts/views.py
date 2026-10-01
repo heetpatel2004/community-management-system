@@ -3,7 +3,7 @@ Views for authentication and user management.
 """
 
 from django.contrib import messages
-from django.contrib.auth import login, logout
+from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy

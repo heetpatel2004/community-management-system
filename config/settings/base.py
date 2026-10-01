@@ -3,7 +3,6 @@ Base settings for Saraswati Sanman Samaroh project.
 Shared configuration across all environments.
 """
 
-import os
 from pathlib import Path
 
 import environ

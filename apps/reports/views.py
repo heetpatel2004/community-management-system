@@ -7,7 +7,6 @@ from django.db.models import Q
 from django.shortcuts import render
 
 from apps.accounts.decorators import admin_required
-from apps.events.models import Event
 from apps.registrations.models import AnnualRegistration
 from apps.registrations.forms import RegistrationFilterForm
 

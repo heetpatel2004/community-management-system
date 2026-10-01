@@ -3,7 +3,6 @@ Family model — permanent family records with auto-generated Family ID.
 """
 
 from django.db import models, transaction
-from django.db.models import Max
 
 
 class Family(models.Model):
@@ -67,12 +66,8 @@ class Family(models.Model):
         """
         with transaction.atomic():
             # Lock the table to prevent race conditions
-            last = (
-                Family.objects
-                .select_for_update()
-                .aggregate(max_id=Max('id'))
-            )
-            next_num = (last['max_id'] or 0) + 1
+            last = Family.objects.select_for_update().order_by('-id').first()
+            next_num = (last.id if last else 0) + 1
             return f"FAM-{next_num:05d}"
 
     @property

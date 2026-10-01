@@ -3,7 +3,6 @@ Student model — permanent student records with auto-generated Student ID.
 """
 
 from django.db import models, transaction
-from django.db.models import Max
 
 
 class Student(models.Model):
@@ -59,10 +58,6 @@ class Student(models.Model):
         Format: STU-XXXXX (e.g., STU-00001)
         """
         with transaction.atomic():
-            last = (
-                Student.objects
-                .select_for_update()
-                .aggregate(max_id=Max('id'))
-            )
-            next_num = (last['max_id'] or 0) + 1
+            last = Student.objects.select_for_update().order_by('-id').first()
+            next_num = (last.id if last else 0) + 1
             return f"STU-{next_num:05d}"
