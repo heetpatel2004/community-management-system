@@ -7,6 +7,8 @@ urlpatterns = [
     # Public
     path('register/', views.family_register, name='register'),
     path('lookup/', views.family_lookup, name='lookup'),
+    path('<str:family_id>/', views.family_portal, name='portal'),
+    path('<str:family_id>/edit-student/<int:student_pk>/', views.family_edit_student, name='edit_student'),
     path('<str:family_id>/add-student/', views.family_add_student, name='add_student'),
 
     # Admin

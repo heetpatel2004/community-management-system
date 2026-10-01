@@ -1,0 +1,98 @@
+{% extends "base_public.html" %}
+{% block page_title %}Edit Student — {{ student.student_id }}{% endblock %}
+
+{% block content %}
+<div class="public-header">
+    <h1>Edit Student Profile</h1>
+</div>
+
+<!-- Student Info -->
+<div class="public-card mb-4">
+    <h5 class="mb-3"><i class="bi bi-person-badge me-1"></i> Student Information</h5>
+    <div class="mb-3">
+        <small class="text-muted d-block">Student ID</small>
+        <span class="id-display">{{ student.student_id }}</span>
+    </div>
+    <div class="mb-3">
+        <small class="text-muted d-block">Family</small>
+        <span class="id-display" style="font-size: 13px;">{{ family.family_id }}</span> — {{ family.family_name }}
+    </div>
+
+    <hr>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="full_name" class="form-label">Student Full Name</label>
+            <input type="text" name="full_name" id="full_name" class="form-control"
+                   value="{{ student.full_name }}" required placeholder="e.g., Rahul Patel">
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg me-1"></i> Save Name
+            </button>
+            <a href="{% url 'families:portal' family.family_id %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Portal
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Academic Records -->
+<div class="public-card">
+    <h5 class="mb-3"><i class="bi bi-journal-text me-1"></i> Academic Records</h5>
+
+    {% if registrations %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Type</th>
+                    <th>Standard</th>
+                    <th>Medium</th>
+                    <th>% / CGPA</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reg in registrations %}
+                <tr>
+                    <td>{{ reg.event.academic_year }}</td>
+                    <td>{{ reg.get_institution_type_display }}</td>
+                    <td>{{ reg.standard }}</td>
+                    <td>{{ reg.get_medium_display }}</td>
+                    <td>{{ reg.percentage_or_cgpa }}</td>
+                    <td><span class="badge-status badge-{{ reg.status }}">{{ reg.get_status_display }}</span></td>
+                    <td>
+                        {% if reg.status == 'draft' or reg.status == 'submitted' %}
+                        <a href="{% url 'registrations:public_edit' family.family_id reg.pk %}"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil me-1"></i> Edit
+                        </a>
+                        {% else %}
+                        <small class="text-muted">Locked</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-journal-text"></i>
+        <h5>No academic records yet.</h5>
+        <p>Submit an annual registration to get started.</p>
+    </div>
+    {% endif %}
+
+    <div class="mt-3">
+        <a href="{% url 'registrations:public_register' family.family_id student.pk %}"
+           class="btn btn-primary btn-sm">
+            <i class="bi bi-journal-plus me-1"></i> Submit New Annual Record
+        </a>
+    </div>
+</div>
+{% endblock %}

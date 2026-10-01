@@ -82,6 +82,45 @@ def public_register(request, family_id, student_pk):
 # ADMIN VIEWS
 # ──────────────────────────────────────────────
 
+def public_edit_registration(request, family_id, pk):
+    """Public: Edit a submitted/draft registration from the family portal."""
+    family = get_object_or_404(Family, family_id=family_id, is_active=True)
+    registration = get_object_or_404(
+        AnnualRegistration.objects.select_related('student__family', 'event'),
+        pk=pk,
+        student__family=family,
+    )
+
+    # Only allow editing draft or submitted registrations
+    if registration.status not in [AnnualRegistration.Status.DRAFT, AnnualRegistration.Status.SUBMITTED]:
+        messages.error(request, 'This registration has already been reviewed and cannot be edited.')
+        return redirect('families:edit_student', family_id=family.family_id, student_pk=registration.student.pk)
+
+    if request.method == 'POST':
+        form = AnnualRegistrationForm(request.POST, request.FILES, instance=registration)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Registration updated successfully.')
+            return redirect('families:edit_student', family_id=family.family_id, student_pk=registration.student.pk)
+    else:
+        # Pre-populate school_standard if institution_type is school
+        initial = {}
+        if registration.institution_type == 'school':
+            initial['school_standard'] = registration.standard
+        form = AnnualRegistrationForm(instance=registration, initial=initial)
+
+    return render(request, 'registrations/public_edit.html', {
+        'form': form,
+        'family': family,
+        'student': registration.student,
+        'registration': registration,
+    })
+
+
+# ──────────────────────────────────────────────
+# ADMIN VIEWS (continued)
+# ──────────────────────────────────────────────
+
 @admin_required
 def admin_registration_list(request):
     """Admin: List all registrations with filters."""
@@ -99,8 +138,10 @@ def admin_registration_list(request):
 
         if data.get('academic_year'):
             registrations = registrations.filter(event__academic_year=data['academic_year'])
+        if data.get('institution_type'):
+            registrations = registrations.filter(institution_type=data['institution_type'])
         if data.get('standard'):
-            registrations = registrations.filter(standard__icontains=data['standard'])
+            registrations = registrations.filter(standard=data['standard'])
         if data.get('medium'):
             registrations = registrations.filter(medium=data['medium'])
         if data.get('status'):

@@ -9,14 +9,15 @@
     <form method="GET">
         <div class="row g-2">
             <div class="col-md-2">{{ filter_form.academic_year }}</div>
+            <div class="col-md-2">{{ filter_form.institution_type }}</div>
             <div class="col-md-2">{{ filter_form.standard }}</div>
             <div class="col-md-2">{{ filter_form.medium }}</div>
             <div class="col-md-2">{{ filter_form.status }}</div>
             <div class="col-md-2">{{ filter_form.search }}</div>
-            <div class="col-md-2 d-flex gap-1">
-                <button type="submit" class="btn btn-primary btn-sm flex-fill"><i class="bi bi-funnel me-1"></i> Filter</button>
-                <a href="{% url 'registrations:admin_list' %}" class="btn btn-outline-secondary btn-sm">Clear</a>
-            </div>
+        </div>
+        <div class="mt-2 d-flex gap-1">
+            <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-funnel me-1"></i> Filter</button>
+            <a href="{% url 'registrations:admin_list' %}" class="btn btn-outline-secondary btn-sm">Clear</a>
         </div>
     </form>
 </div>

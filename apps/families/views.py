@@ -66,7 +66,6 @@ def family_register(request):
 def family_lookup(request):
     """Public: Look up an existing family by Family ID."""
     form = FamilyLookupForm()
-    family = None
     error = None
 
     if request.method == 'POST':
@@ -75,17 +74,50 @@ def family_lookup(request):
             family_id = form.cleaned_data['family_id']
             try:
                 family = Family.objects.get(family_id=family_id, is_active=True)
-                students = family.students.filter(is_active=True)
-                return render(request, 'families/family_portal.html', {
-                    'family': family,
-                    'students': students,
-                })
+                return redirect('families:portal', family_id=family.family_id)
             except Family.DoesNotExist:
                 error = f'No active family found with ID "{family_id}". Please check the ID and try again.'
 
     return render(request, 'families/lookup.html', {
         'form': form,
         'error': error,
+    })
+
+
+def family_portal(request, family_id):
+    """Public: View family portal with all students."""
+    family = get_object_or_404(Family, family_id=family_id, is_active=True)
+    students = family.students.filter(is_active=True)
+    return render(request, 'families/family_portal.html', {
+        'family': family,
+        'students': students,
+    })
+
+
+def family_edit_student(request, family_id, student_pk):
+    """Public: Edit student profile from family portal."""
+    family = get_object_or_404(Family, family_id=family_id, is_active=True)
+    student = get_object_or_404(Student, pk=student_pk, family=family, is_active=True)
+    registrations = (
+        student.annual_registrations
+        .select_related('event')
+        .order_by('-event__academic_year')
+    )
+
+    if request.method == 'POST':
+        full_name = request.POST.get('full_name', '').strip()
+        if full_name:
+            student.full_name = full_name
+            student.save()
+            messages.success(request, 'Student profile updated successfully.')
+            return redirect('families:edit_student', family_id=family.family_id, student_pk=student.pk)
+        else:
+            messages.error(request, 'Student name cannot be empty.')
+
+    return render(request, 'families/edit_student.html', {
+        'family': family,
+        'student': student,
+        'registrations': registrations,
     })
 
 

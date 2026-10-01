@@ -23,6 +23,7 @@
                     <div class="col-sm-6 mb-3"><small class="text-muted d-block">Student Name</small><strong>{{ registration.student.full_name }}</strong></div>
                     <div class="col-sm-6 mb-3"><small class="text-muted d-block">Family ID</small><a href="{% url 'families:admin_detail' registration.student.family.pk %}">{{ registration.student.family.family_id }}</a></div>
                     <div class="col-sm-6 mb-3"><small class="text-muted d-block">Event</small>{{ registration.event.academic_year }}</div>
+                    <div class="col-sm-6 mb-3"><small class="text-muted d-block">Institution Type</small>{{ registration.get_institution_type_display }}</div>
                     <div class="col-sm-6 mb-3"><small class="text-muted d-block">Standard</small>{{ registration.standard }}</div>
                     <div class="col-sm-6 mb-3"><small class="text-muted d-block">Medium</small>{{ registration.get_medium_display }}</div>
                     <div class="col-sm-6 mb-3"><small class="text-muted d-block">Percentage/CGPA</small><strong>{{ registration.percentage_or_cgpa }}</strong></div>

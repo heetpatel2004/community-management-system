@@ -33,8 +33,11 @@ def report_view(request):
         if data.get('academic_year'):
             registrations = registrations.filter(event__academic_year=data['academic_year'])
             active_filters['Academic Year'] = data['academic_year']
+        if data.get('institution_type'):
+            registrations = registrations.filter(institution_type=data['institution_type'])
+            active_filters['Type'] = dict(AnnualRegistration.InstitutionType.choices).get(data['institution_type'], data['institution_type'])
         if data.get('standard'):
-            registrations = registrations.filter(standard__icontains=data['standard'])
+            registrations = registrations.filter(standard=data['standard'])
             active_filters['Standard'] = data['standard']
         if data.get('medium'):
             registrations = registrations.filter(medium=data['medium'])

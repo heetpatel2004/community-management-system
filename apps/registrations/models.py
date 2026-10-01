@@ -37,6 +37,10 @@ class AnnualRegistration(models.Model):
         ENGLISH = 'english', 'English'
         HINDI = 'hindi', 'Hindi'
 
+    class InstitutionType(models.TextChoices):
+        SCHOOL = 'school', 'School'
+        COLLEGE = 'college', 'College'
+
     student = models.ForeignKey(
         'students.Student',
         on_delete=models.PROTECT,
@@ -46,6 +50,12 @@ class AnnualRegistration(models.Model):
         'events.Event',
         on_delete=models.PROTECT,
         related_name='registrations',
+    )
+    institution_type = models.CharField(
+        max_length=10,
+        choices=InstitutionType.choices,
+        db_index=True,
+        help_text='Whether the student is in School or College',
     )
     standard = models.CharField(
         max_length=50,

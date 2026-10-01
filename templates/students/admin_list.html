@@ -6,10 +6,21 @@
 </div>
 
 <div class="filter-bar">
-    <form method="GET" class="d-flex gap-2">
-        <input type="text" name="search" class="form-control" placeholder="Search by Student ID, name, Family ID..." value="{{ search }}">
+    <form method="GET" class="d-flex gap-2 flex-wrap align-items-end">
+        <input type="text" name="search" class="form-control" placeholder="Search by Student ID, name, Family ID..." value="{{ search }}" style="max-width: 300px;">
+        <select name="status" class="form-select" style="max-width: 160px;">
+            <option value="">All Statuses</option>
+            <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+        </select>
+        <select name="family_id" class="form-select" style="max-width: 220px;">
+            <option value="">All Families</option>
+            {% for fam in families %}
+            <option value="{{ fam.family_id }}" {% if family_filter == fam.family_id %}selected{% endif %}>{{ fam.family_id }} — {{ fam.family_name }}</option>
+            {% endfor %}
+        </select>
         <button type="submit" class="btn btn-primary" style="white-space: nowrap;"><i class="bi bi-search me-1"></i> Search</button>
-        {% if search %}<a href="{% url 'students:admin_list' %}" class="btn btn-outline-secondary">Clear</a>{% endif %}
+        {% if search or status_filter or family_filter %}<a href="{% url 'students:admin_list' %}" class="btn btn-outline-secondary">Clear</a>{% endif %}
     </form>
 </div>
 

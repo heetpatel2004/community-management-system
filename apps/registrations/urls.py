@@ -6,6 +6,7 @@ app_name = 'registrations'
 urlpatterns = [
     # Public
     path('submit/<str:family_id>/<int:student_pk>/', views.public_register, name='public_register'),
+    path('edit/<str:family_id>/<int:pk>/', views.public_edit_registration, name='public_edit'),
 
     # Admin
     path('admin/', views.admin_registration_list, name='admin_list'),
