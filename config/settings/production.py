@@ -9,16 +9,24 @@ DEBUG = False
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS','*')
 
 # Database - PostgreSQL
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT', default='5432'),
+# Prefer DATABASE_URL when provided (Render provides DATABASE_URL for managed databases)
+DATABASE_URL = env('DATABASE_URL', default=None)
+if DATABASE_URL:
+    DATABASES = {
+        'default': env.db('DATABASE_URL')
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PASSWORD'),
+            'HOST': env('DB_HOST'),
+            'PORT': env('DB_PORT', default='5432'),
+            'CONN_MAX_AGE': env.int('CONN_MAX_AGE', default=600),
+        }
+    }
 
 # Security settings
 SECURE_BROWSER_XSS_FILTER = True
